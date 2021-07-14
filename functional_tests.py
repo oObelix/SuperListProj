@@ -1,4 +1,6 @@
 from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+import time
 import unittest
 
 
@@ -20,18 +22,33 @@ class NewVisitorTest(unittest.TestCase):
         # Мы видим в заголовке браузера, что находимся в приложении списка
         # неотложных дел
         assert "To-Do" in self.browser.title
-        self.fail("Закончить тест!")
+        header_text = self.browser.find_element_by_tag_name('h1').text
+        self.assertIn('To-Do', header_text)
 
         # Нам сразу же предлагается ввести элемент списка
+        input_box = self.browser.find_element_by_id('id_new_item')
+        self.assertEqual(
+            input_box.get_attribute('placeholder'),
+            'Enter a to-do item'
+        )
 
         # Мы набираем втекстовом поле "Купить автомобиль"
+        input_box.send_keys('Купить автомобиль')
 
         # Когда нажимаем Enter, страница обновляется, и теперь страница
         # содержит: "1. Купить автомобиль" в качестве элемента списка
+        input_box.send_keys(Keys.ENTER)
+        time.sleep(1)
+        table = self.browser.find_element_by_id('id_list_table')
+        rows = table.find_elements_by_tag_name('tr')
+        self.assertTrue(
+            any(row.text == '1. Купить автомобиль' for row in rows)
+        )
 
         # Текстовое поле попрежнему ожидает ввод элемента списка
 
         # Мы вводим "Купить мотоцикл"
+        self.fail('Закончить тест!')
 
         # Когда нажимаем Enter, страница обновляется, и теперь страница
         # отображает оба введённых элемента списка
