@@ -13,9 +13,14 @@ class NewVisitorTest(unittest.TestCase):
     def tearDown(self) -> None:
         self.browser.quit()
 
+    def check_for_row_in_list_table(self, row_text):
+        """подтверждение строки в таблице списка"""
+        table = self.browser.find_element_by_id('id_list_table')
+        rows = table.find_elements_by_tag_name('tr')
+        self.assertIn(row_text, [row.text for row in rows])
+
     def test_can_start_a_list_and_retrieve_it_later(self):
         """тест: можно начать список и получить его позже"""
-
         # Заходим на домашнюю страницу неотложного списка
         self.browser.get("http://localhost:8000")
 
@@ -39,11 +44,12 @@ class NewVisitorTest(unittest.TestCase):
         # содержит: "1: Купить автомобиль" в качестве элемента списка
         input_box.send_keys(Keys.ENTER)
         time.sleep(1)
-        table = self.browser.find_element_by_id('id_list_table')
-        rows = table.find_elements_by_tag_name('tr')
-        self.assertIn(
-            '1: Купить автомобиль', [row.text for row in rows]
-        )
+        self.check_for_row_in_list_table('1: Купить автомобиль')
+        # table = self.browser.find_element_by_id('id_list_table')
+        # rows = table.find_elements_by_tag_name('tr')
+        # self.assertIn(
+        #     '1: Купить автомобиль', [row.text for row in rows]
+        # )
 
         # Текстовое поле попрежнему ожидает ввод элемента списка
         # Мы вводим "Съездить в Ялту"
@@ -54,15 +60,9 @@ class NewVisitorTest(unittest.TestCase):
         input_box.send_keys(Keys.ENTER)
         time.sleep(1)
 
-        # Теперь страницаотображает оба введённых элемента списка
-        table = self.browser.find_element_by_id('id_list_table')
-        rows = table.find_elements_by_tag_name('tr')
-        self.assertIn(
-            '1: Купить автомобиль', [row.text for row in rows]
-        )
-        self.assertIn(
-            '2: Съездить в Ялту', [row.text for row in rows]
-        )
+        # Теперь страницао тображает оба введённых элемента списка
+        self.check_for_row_in_list_table('1: Купить автомобиль')
+        self.check_for_row_in_list_table('2: Съездить в Ялту')
 
         # Нам интересно запомнит ли приложение наш список. Мы видим, что сайт
         # сгенерировал нам уникальный URL-адрес страницы - об этом нам говорит
