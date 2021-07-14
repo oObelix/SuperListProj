@@ -36,27 +36,39 @@ class NewVisitorTest(unittest.TestCase):
         input_box.send_keys('Купить автомобиль')
 
         # Когда нажимаем Enter, страница обновляется, и теперь страница
-        # содержит: "1. Купить автомобиль" в качестве элемента списка
+        # содержит: "1: Купить автомобиль" в качестве элемента списка
         input_box.send_keys(Keys.ENTER)
         time.sleep(1)
         table = self.browser.find_element_by_id('id_list_table')
         rows = table.find_elements_by_tag_name('tr')
-        self.assertTrue(
-            any(row.text == '1. Купить автомобиль' for row in rows),
-            'Новый элемент списка не появился в таблице'
+        self.assertIn(
+            '1: Купить автомобиль', [row.text for row in rows]
         )
 
         # Текстовое поле попрежнему ожидает ввод элемента списка
+        # Мы вводим "Съездить в Ялту"
+        input_box = self.browser.find_element_by_id('id_new_item')
+        input_box.send_keys('Съездить в Ялту')
 
-        # Мы вводим "Купить мотоцикл"
-        self.fail('Закончить тест!')
+        # Когда нажимаем Enter, страница обновляется
+        input_box.send_keys(Keys.ENTER)
+        time.sleep(1)
 
-        # Когда нажимаем Enter, страница обновляется, и теперь страница
-        # отображает оба введённых элемента списка
+        # Теперь страницаотображает оба введённых элемента списка
+        table = self.browser.find_element_by_id('id_list_table')
+        rows = table.find_elements_by_tag_name('tr')
+        self.assertIn(
+            '1: Купить автомобиль', [row.text for row in rows]
+        )
+        self.assertIn(
+            '2: Съездить в Ялту', [row.text for row in rows]
+        )
 
         # Нам интересно запомнит ли приложение наш список. Мы видим, что сайт
         # сгенерировал нам уникальный URL-адрес страницы - об этом нам говорит
         # небольшой текст с объяснениями
+
+        self.fail('Закончить тест!')
 
         # Мы посещаем этот URL-адрес и убеждаемся, что список ещё там
 
