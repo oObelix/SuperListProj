@@ -1,10 +1,11 @@
+from django.test import LiveServerTestCase
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 import time
-import unittest
+# import unittest
 
 
-class NewVisitorTest(unittest.TestCase):
+class NewVisitorTest(LiveServerTestCase):
     """тест нового посетителя"""
 
     def setUp(self) -> None:
@@ -22,7 +23,7 @@ class NewVisitorTest(unittest.TestCase):
     def test_can_start_a_list_and_retrieve_it_later(self):
         """тест: можно начать список и получить его позже"""
         # Заходим на домашнюю страницу неотложного списка
-        self.browser.get("http://localhost:8000")
+        self.browser.get(self.live_server_url)
 
         # Мы видим в заголовке браузера, что находимся в приложении списка
         # неотложных дел
@@ -39,6 +40,8 @@ class NewVisitorTest(unittest.TestCase):
 
         # Мы набираем втекстовом поле "Купить автомобиль"
         input_box.send_keys('Купить автомобиль')
+
+        # TODO: Удаление операторов time.spleep
 
         # Когда нажимаем Enter, страница обновляется, и теперь страница
         # содержит: "1: Купить автомобиль" в качестве элемента списка
@@ -64,6 +67,8 @@ class NewVisitorTest(unittest.TestCase):
         self.check_for_row_in_list_table('1: Купить автомобиль')
         self.check_for_row_in_list_table('2: Съездить в Ялту')
 
+        # TODO: Уборка после выполнения ФТ
+
         # Нам интересно запомнит ли приложение наш список. Мы видим, что сайт
         # сгенерировал нам уникальный URL-адрес страницы - об этом нам говорит
         # небольшой текст с объяснениями
@@ -73,5 +78,5 @@ class NewVisitorTest(unittest.TestCase):
         # Мы посещаем этот URL-адрес и убеждаемся, что список ещё там
 
 
-if __name__ == "__main__":
-    unittest.main(warnings="ignore")
+# if __name__ == "__main__":
+#     unittest.main(warnings="ignore")
